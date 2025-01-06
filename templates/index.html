@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Inventory</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Server Inventory</h1>
+        
+        <!-- Add Server Form -->
+        <form action="/add_server" method="POST" class="mb-4">
+            <div class="form-group">
+                <label for="model">Server Model</label>
+                <input type="text" name="model" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select name="status" class="form-control" required>
+                    <option value="Available">Available</option>
+                    <option value="Unavailable">Unavailable</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Server</button>
+        </form>
+
+        <!-- Server List -->
+        <h2>Server List</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Status</th>
+                    <th>Reserved Until</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for server in servers %}
+                <tr>
+                    <td>{{ server['model'] }}</td>
+                    <td>{{ server['status'] }}</td>
+                    <td>{{ server['reserved_until'] or 'Not Reserved' }}</td>
+                    <td>
+                        {% if server['status'] == 'Available' %}
+                        <form action="/reserve" method="POST" class="form-inline">
+                            <input type="hidden" name="server_id" value="{{ server['_id'] }}">
+                            <input type="date" name="reserve_until" class="form-control" required>
+                            <button type="submit" class="btn btn-success ml-2">Reserve</button>
+                        </form>
+                        {% else %}
+                        <span class="text-muted">Unavailable</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
